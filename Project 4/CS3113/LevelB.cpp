@@ -1,0 +1,99 @@
+#include "LevelB.h"
+
+// Level B Constants
+constexpr int LEVEL_WIDTH_B = 40;
+constexpr int LEVEL_HEIGHT_B = 12;
+
+// Map data for Level B (0 = empty, 1=tile 1, 2=tile 2, 3=tile 3)
+constexpr unsigned int LEVEL_DATA_B[] = {
+    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    3, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+    3, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,
+    3, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0,
+    3, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,
+    3, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,
+    3, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0};
+
+/**
+ * @brief Initialise Level B
+ */
+void LevelB::initialise()
+{
+   mGameState.nextSceneID = -1;
+
+   // Loading music and sound effects
+   mGameState.bgm = LoadMusicStream("assets/game/blackground.mp3");
+   PlayMusicStream(mGameState.bgm);
+   SetMusicVolume(mGameState.bgm, 0.6f);
+   mGameState.jumpSound = LoadSound("assets/game/jump.ogg");
+   mGameState.bumpSound = LoadSound("assets/game/bump.ogg");
+
+   // Create a map instance
+   mGameState.map = new Map(LEVEL_WIDTH_B, LEVEL_HEIGHT_B, (unsigned int *)LEVEL_DATA_B, "assets/game/tileset.png", 50.0f, 3, 1, mOrigin);
+
+   // Create a player instance
+   std::map<Direction, std::vector<int>> anim = {{DOWN, {0, 4, 8, 12}}, {LEFT, {1, 5, 9, 13}}, {UP, {2, 6, 10, 14}}, {RIGHT, {3, 7, 11, 15}}};
+   mGameState.player = new Entity({100.0f, 300.0f}, {80.0f, 80.0f}, "assets/game/george.png", ATLAS, {4, 4}, anim, PLAYER);
+
+   // Set the player's physical attributes
+   mGameState.player->setJumpingPower(600.0f);
+   mGameState.player->setAcceleration({0.0f, 981.0f});
+   mGameState.player->setColliderDimensions({25.0f, 50.0f});
+
+   // Create AI
+   mGameState.enemy = new Entity({600.0f, 300.0f}, {50.0f, 50.0f}, "assets/game/follower.png", NPC);
+   mGameState.enemy->setAIType(FOLLOWER);
+   mGameState.enemy->setAIState(IDLE);
+   mGameState.enemy->setAcceleration({0.0f, 981.0f});
+   mGameState.enemy->setSpeed(80);
+   mGameState.enemy->setColliderDimensions({30.0f, 30.0f});
+
+   // Initialise Camera
+   mGameState.camera = {0};
+   mGameState.camera.target = mGameState.player->getPosition();
+   mGameState.camera.offset = mOrigin;
+   mGameState.camera.zoom = 1.0f;
+}
+
+/**
+ * @brief Update Level B
+ * @param deltaTime
+ */
+void LevelB::update(float deltaTime)
+{
+   UpdateMusicStream(mGameState.bgm);
+
+   mGameState.player->update(deltaTime, mGameState.player, mGameState.map, nullptr, 0);
+   mGameState.enemy->update(deltaTime, mGameState.player, mGameState.map, nullptr, 0);
+
+   // Level transition logic
+   if (mGameState.player->getPosition().x > mGameState.map->getRightBoundary() - 100.0f)
+      mGameState.nextSceneID = SCENE_LEVEL_C;
+}
+
+/**
+ * @brief Render Level B
+ */
+void LevelB::render()
+{
+   ClearBackground(ColorFromHex(mBGColourHexCode));
+   mGameState.map->render();
+   mGameState.player->render();
+   mGameState.enemy->render();
+}
+
+void LevelB::shutdown()
+{
+   delete mGameState.player;
+   delete mGameState.map;
+   delete mGameState.enemy;
+
+   UnloadMusicStream(mGameState.bgm);
+   UnloadSound(mGameState.jumpSound);
+   UnloadSound(mGameState.bumpSound);
+}
