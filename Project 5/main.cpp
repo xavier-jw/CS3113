@@ -1,3 +1,13 @@
+/**
+ * Author: [Junjie Wang]
+ * Assignment: [Project 5: DEMON HUNTER]
+ * Date due: [2025-12-05], 2:00pm
+ * I pledge that I have completed this assignment without
+ * collaborating with anyone else, in conformance with the
+ * NYU School of Engineering Policies and Procedures on
+ * Academic Misconduct.
+ **/
+
 #include "CS3113/cs3113.h"
 #include "CS3113/MenuScreen.h"
 #include "CS3113/LevelA.h"
@@ -179,7 +189,7 @@ void processInput()
 }
 
 /**
- * Logic update function
+ * Update function
  */
 void update()
 {
@@ -282,7 +292,7 @@ void render()
 
         gShader.end();
 
-        // EN: Render effects overlay (after Shader, inside camera mode)
+        // Render effects overlay (after Shader, inside camera mode)
         gEffects->render();
 
         EndMode2D();

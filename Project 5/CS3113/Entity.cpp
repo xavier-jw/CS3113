@@ -150,7 +150,7 @@ void Entity::checkCollisionX(Map *map)
     }
 }
 
-// Check collision with obstacles (other entities) and correct position (push-back)
+// Check collision with obstacles (other entities) and correct position
 void Entity::checkCollisionWithObstacles(std::vector<Entity *> *obstacles)
 {
     for (Entity *obj : *obstacles)
@@ -203,7 +203,7 @@ void Entity::aiActivate(Entity *player, float deltaTime)
     else if (mAIType == SLIME)
         aiSlime(player, deltaTime);
     else if (mAIType == DEMON)
-        aiDemon(player, deltaTime); // [修改] 传递 deltaTime
+        aiDemon(player, deltaTime); // input deltaTime
 }
 
 void Entity::aiSlime(Entity *player, float deltaTime)
@@ -284,7 +284,7 @@ void Entity::aiDemon(Entity *player, float deltaTime)
     if (mAttackCooldown > 0.0f)
     {
         mAttackCooldown -= deltaTime;
-        mMovement = {0.0f, 0.0f}; // 停止移动
+        mMovement = {0.0f, 0.0f}; // cease move
         return;
     }
 
